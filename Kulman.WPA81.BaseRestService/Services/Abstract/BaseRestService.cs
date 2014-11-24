@@ -92,17 +92,26 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
 
         /// <summary>
-        /// Creates a HTTP Client instance, supports GZIP compression
+        /// Override if you need custom HttpClientHandler
         /// </summary>
-        /// <returns></returns>
-        private HttpClient CreateHttpClient()
+        /// <returns>HttpClientHandler</returns>
+        protected virtual HttpClientHandler CreateHttpClientHandler()
         {
             var handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
             {
                 handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             }
-            var client = new HttpClient(handler);
+            return handler;
+        }
+
+        /// <summary>
+        /// Creates a HTTP Client instance, supports GZIP compression
+        /// </summary>
+        /// <returns></returns>
+        private HttpClient CreateHttpClient()
+        {
+            var client = new HttpClient(CreateHttpClientHandler());
             var headers = GetRequestHeaders();
             foreach (var key in headers.Keys)
             {
