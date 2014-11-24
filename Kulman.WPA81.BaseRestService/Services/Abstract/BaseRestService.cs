@@ -12,42 +12,89 @@ using Newtonsoft.Json.Serialization;
 
 namespace Kulman.WPA81.BaseRestService.Services.Abstract
 {
+    /// <summary>
+    /// Base class for JSON based REST services
+    /// </summary>
     public abstract class BaseRestService
     {
+        /// <summary>
+        /// Must be overriden to set the Base URL
+        /// </summary>
+        /// <returns>Base URL</returns>
         protected abstract string GetBaseUrl();
 
+        /// <summary>
+        /// Executed before every request
+        /// </summary>
+        /// <returns>Task</returns>
         protected virtual Task OnBeforeRequest()
         {
             return Task.FromResult(1);
         }
 
+        /// <summary>
+        /// Must be overriden to set the default request headers
+        /// </summary>
+        /// <returns>Dictionary containing default request headers</returns>
         protected abstract Dictionary<string, string> GetRequestHeaders();
 
+        /// <summary>
+        /// REST Get
+        /// </summary>        
+        /// <param name="url">Url</param>
+        /// <returns>Task</returns>
         protected Task<T> Get<T>(string url)
         {
             return GetResponse<T>(url, HttpMethod.Get, null);
         }
 
+        /// <summary>
+        /// REST Delete
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <returns>Task</returns>
         protected Task Delete(string url)
         {
             return GetResponse(url, HttpMethod.Delete, null);
         }
 
+        /// <summary>
+        /// REST Put
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON)</param>
+        /// <returns>Task</returns>
         protected Task<T> Put<T>(string url, object request)
         {
             return GetResponse<T>(url, HttpMethod.Put, request);
         }
 
+        /// <summary>
+        /// REST Post
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON)</param>
+        /// <returns>Task</returns>
         protected Task<T> Post<T>(string url, object request)
         {
             return GetResponse<T>(url, HttpMethod.Post, request);
         }
 
+        /// <summary>
+        /// REST Patch
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON)</param>
+        /// <returns>Task</returns>
         protected Task<T> Patch<T>(string url, object request)
         {
             return GetResponse<T>(url, HttpMethod.Trace, request);
         }
 
+        /// <summary>
+        /// Creates a HTTP Client instance, supports GZIP compression
+        /// </summary>
+        /// <returns></returns>
         private HttpClient CreateHttpClient()
         {
             var handler = new HttpClientHandler();
@@ -70,6 +117,14 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             return client;
         }
 
+        //TODO: merge with the typed version
+        /// <summary>
+        /// Gets HTTP response
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="method">HTTP Method</param>
+        /// <param name="request">HTTP request</param>
+        /// <returns>Task</returns>
         private async Task GetResponse(string url, HttpMethod method, object request)
         {
             await OnBeforeRequest();
@@ -126,8 +181,17 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
         }
 
+        /// <summary>
+        /// Gets HTTP response
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="method">HTTP Method</param>
+        /// <param name="request">HTTP request</param>
+        /// <returns>Task</returns>
         private async Task<T> GetResponse<T>(string url, HttpMethod method, object request)
         {
+            await OnBeforeRequest();
+
             string json = string.Empty;
             HttpResponseMessage data = null;
 
