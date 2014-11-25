@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -266,6 +267,35 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// REST Head
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <returns>Dictionary with headers</returns>
+        public async Task<Dictionary<string, string>> Head(string url)
+        {
+            await OnBeforeRequest(url);
+
+            HttpResponseMessage data = null;
+
+            try
+            {
+                var client = CreateHttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Head, GetBaseUrl() + url);
+                var response = await client.SendAsync(request);
+
+                return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value.ToString());
+            }
+            catch (TaskCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed, string.Empty);
+            }
         }
     }
 }
