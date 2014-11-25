@@ -26,8 +26,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <summary>
         /// Executed before every request
         /// </summary>
+        /// <param name="url">Url</param>
         /// <returns>Task</returns>
-        protected virtual Task OnBeforeRequest()
+        protected virtual Task OnBeforeRequest(string url)
         {
             return Task.FromResult(1);
         }
@@ -136,7 +137,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         private async Task GetResponse(string url, HttpMethod method, object request)
         {
-            await OnBeforeRequest();
+            await OnBeforeRequest(url);
 
             //string json = string.Empty;
             HttpResponseMessage data = null;
@@ -199,7 +200,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         private async Task<T> GetResponse<T>(string url, HttpMethod method, object request)
         {
-            await OnBeforeRequest();
+            await OnBeforeRequest(url);
 
             string json = string.Empty;
             HttpResponseMessage data = null;
