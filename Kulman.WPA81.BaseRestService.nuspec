@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Kulman.WPA81.BaseRestService</id>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <title>Kulman.WPA81.BaseRestService</title>
     <authors>Igor Kulman</authors>
     <owners></owners>
