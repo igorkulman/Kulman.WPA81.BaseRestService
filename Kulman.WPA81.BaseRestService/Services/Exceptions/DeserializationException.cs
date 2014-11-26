@@ -4,10 +4,12 @@ namespace Kulman.WPA81.BaseRestService.Services.Exceptions
 {
     public class DeserializationException : DataServiceException
     {
-        public DeserializationException(string message, Exception innerException)
+        public string JsonData { get; private set; }
+
+        public DeserializationException(string message, Exception innerException, string data)
             : base(message, innerException)
         {
-
+            JsonData = data;
         }
     }
 }

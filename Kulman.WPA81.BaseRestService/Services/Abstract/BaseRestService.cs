@@ -263,7 +263,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new DeserializationException("Error while processing response. See the inner exception for details.", ex);
+                throw new DeserializationException("Error while processing response. See the inner exception for details.", ex, json);
             }
 
             return result;
