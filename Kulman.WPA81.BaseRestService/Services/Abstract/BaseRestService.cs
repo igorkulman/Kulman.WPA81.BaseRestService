@@ -168,7 +168,12 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                     Content = request != null ? new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json") : null,
                 };
 
-                data = await client.SendAsync(requestMessage);
+                data = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+
+                if (noOutput)
+                {
+                    return default(T);
+                }
 
                 json = await data.Content.ReadAsStringAsync();
                 // *******************
@@ -192,11 +197,6 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             try
             {
-                if (noOutput)
-                {
-                    return default(T);
-                }
-
                 //deserialization and creation of the result
                 result = JsonConvert.DeserializeObject<T>(json);
             }
