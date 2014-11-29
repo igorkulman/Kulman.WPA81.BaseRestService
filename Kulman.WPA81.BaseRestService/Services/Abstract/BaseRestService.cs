@@ -213,7 +213,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <returns>Dictionary with headers</returns>
-        public async Task<Dictionary<string, string>> Head(string url)
+        public async Task<Dictionary<string, IEnumerable<string>>> Head(string url)
         {
             await OnBeforeRequest(url);
 
@@ -223,9 +223,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             {
                 var client = CreateHttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Head, GetBaseUrl() + url);
-                var response = await client.SendAsync(request);
+                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
-                return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value.ToString());
+                return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value);
             }
             catch (TaskCanceledException)
             {
