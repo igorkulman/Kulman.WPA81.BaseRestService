@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Kulman.WPA81.BaseRestService.Code;
 using Kulman.WPA81.BaseRestService.Services.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -90,7 +89,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         protected Task<T> Patch<T>(string url, object request)
         {
-            return GetResponse<T>(url, HttpMethod.Trace, request);
+            return GetResponse<T>(url, new HttpMethod("PATCH"), request);
         }
 
         /// <summary>
@@ -118,11 +117,13 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             foreach (var key in headers.Keys)
             {
                 client.DefaultRequestHeaders.TryAddWithoutValidation(key, headers[key]);
-            }            
+            }
+
             var settings = new JsonSerializerSettings()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
             };
+
             settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             return client;
@@ -138,58 +139,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         private async Task GetResponse(string url, HttpMethod method, object request)
         {
-            await OnBeforeRequest(url);
-
-            //string json = string.Empty;
-            HttpResponseMessage data = null;
-
-            try
-            {
-                var client = CreateHttpClient();
-                if (method == HttpMethod.Get)
-                {
-                    data = await client.GetAsync(GetBaseUrl() + url);
-                }
-                else if (method == HttpMethod.Delete)
-                {
-                    data = await client.DeleteAsync(GetBaseUrl() + url);
-                }
-                else if (method == HttpMethod.Post)
-                {
-                    var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-                    data = await client.PostAsync(new Uri(GetBaseUrl() + url), content);
-                }
-                else if (method == HttpMethod.Put)
-                {
-                    var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-                    data = await client.PutAsync(new Uri(GetBaseUrl() + url), content);
-                }
-                else if (method == HttpMethod.Trace)
-                {
-                    var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-                    data = await client.PatchAsync(new Uri(GetBaseUrl() + url), content);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-                //json = await data.Content.ReadAsStringAsync();
-                // *******************
-                // DEBUG INFO
-                // *******************
-                Debug.WriteLine("RESPONSE:" + url);
-                Debug.WriteLine(data.StatusCode);
-                // *******************
-                //data.EnsureSuccessStatusCode();
-            }
-            catch (TaskCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed, string.Empty);
-            }
+            await GetResponse<Object>(url, method, request, true);
         }
 
         /// <summary>
@@ -198,8 +148,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
+        /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
         /// <returns>Task</returns>
-        private async Task<T> GetResponse<T>(string url, HttpMethod method, object request)
+        private async Task<T> GetResponse<T>(string url, HttpMethod method, object request, bool noOutput = false)
         {
             await OnBeforeRequest(url);
 
@@ -209,33 +160,21 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             try
             {
                 var client = CreateHttpClient();
-                if (method == HttpMethod.Get)
+
+                var requestMessage = new HttpRequestMessage
                 {
-                    data = await client.GetAsync(GetBaseUrl() + url);
-                }
-                else if (method == HttpMethod.Delete)
+                    Method = method,
+                    RequestUri = new Uri(GetBaseUrl() + url),
+                    Content = request != null ? new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json") : null,
+                };
+
+                data = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+
+                if (noOutput)
                 {
-                    data = await client.DeleteAsync(GetBaseUrl() + url);
+                    return default(T);
                 }
-                else if (method == HttpMethod.Post)
-                {
-                    var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-                    data = await client.PostAsync(new Uri(GetBaseUrl() + url), content);
-                }
-                else if (method == HttpMethod.Put)
-                {
-                    var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-                    data = await client.PutAsync(new Uri(GetBaseUrl() + url), content);
-                }
-                else if (method == HttpMethod.Trace)
-                {
-                    var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-                    data = await client.PatchAsync(new Uri(GetBaseUrl() + url), content);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
+
                 json = await data.Content.ReadAsStringAsync();
                 // *******************
                 // DEBUG INFO
@@ -274,7 +213,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <returns>Dictionary with headers</returns>
-        public async Task<Dictionary<string, string>> Head(string url)
+        public async Task<Dictionary<string, IEnumerable<string>>> Head(string url)
         {
             await OnBeforeRequest(url);
 
@@ -284,9 +223,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             {
                 var client = CreateHttpClient();
                 var request = new HttpRequestMessage(HttpMethod.Head, GetBaseUrl() + url);
-                var response = await client.SendAsync(request);
+                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
-                return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value.ToString());
+                return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value);
             }
             catch (TaskCanceledException)
             {
