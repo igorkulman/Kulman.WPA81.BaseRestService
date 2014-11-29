@@ -139,7 +139,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         private async Task GetResponse(string url, HttpMethod method, object request)
         {
-            await GetResponse<Object>(url, method, request, true);
+            await GetResponse<Object>(url, method, request);
         }
 
         /// <summary>
@@ -168,12 +168,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                     Content = request != null ? new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json") : null,
                 };
 
-                data = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
-
-                if (noOutput)
-                {
-                    return default(T);
-                }
+                data = await client.SendAsync(requestMessage);
 
                 json = await data.Content.ReadAsStringAsync();
                 // *******************
@@ -197,6 +192,11 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             try
             {
+                if (noOutput)
+                {
+                    return default(T);
+                }
+
                 //deserialization and creation of the result
                 result = JsonConvert.DeserializeObject<T>(json);
             }
@@ -213,7 +213,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <returns>Dictionary with headers</returns>
-        public async Task<Dictionary<string, IEnumerable<string>>> Head(string url)
+        public async Task<Dictionary<string, string>> Head(string url)
         {
             await OnBeforeRequest(url);
 
@@ -225,7 +225,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                 var request = new HttpRequestMessage(HttpMethod.Head, GetBaseUrl() + url);
                 var response = await client.SendAsync(request);
 
-                return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value);
+                return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value.ToString());
             }
             catch (TaskCanceledException)
             {
