@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Kulman.WPA81.Test.Data;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 
 namespace Kulman.WPA81.Test
@@ -24,6 +25,13 @@ namespace Kulman.WPA81.Test
             var data = await _dataService.Get();
             Assert.IsNotNull(data);
             Assert.IsFalse(String.IsNullOrEmpty(data.Ip));
+        }
+
+        [TestMethod]
+        public async Task TestPost()
+        {
+            var data = await _dataService.Post(new PostUserLoginRequest());
+            Assert.IsNotNull(data);
         }
     }
 }

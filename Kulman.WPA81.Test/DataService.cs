@@ -11,7 +11,7 @@ namespace Kulman.WPA81.Test
     {
         protected override string GetBaseUrl()
         {
-            return "http://ip.jsontest.com";
+            return "";
         }
 
         protected override Dictionary<string, string> GetRequestHeaders()
@@ -21,7 +21,12 @@ namespace Kulman.WPA81.Test
 
         public Task<IPResponse> Get()
         {
-            return Get<IPResponse>("/");
+            return Get<IPResponse>("http://ip.jsontest.com");
+        }
+
+        public Task<PostUserLoginResponse> Post(PostUserLoginRequest request)
+        {
+            return Post<PostUserLoginResponse>("https://private-34396-gooddata.apiary-mock.com/gdc/account/login", request);
         }
     }
 }
