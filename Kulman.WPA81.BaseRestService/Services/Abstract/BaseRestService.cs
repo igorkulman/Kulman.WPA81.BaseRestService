@@ -37,7 +37,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// Must be overriden to set the default request headers
         /// </summary>
         /// <returns>Dictionary containing default request headers</returns>
-        protected abstract Dictionary<string, string> GetRequestHeaders();
+        protected abstract Dictionary<string, string> GetRequestHeaders(string requestUrl);        
 
         /// <summary>
         /// REST Get
@@ -107,13 +107,14 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
 
         /// <summary>
-        /// Creates a HTTP Client instance, supports GZIP compression
+        /// Creates a HTTP Client instance
         /// </summary>
-        /// <returns></returns>
-        private HttpClient CreateHttpClient()
+        /// <param name="requestUrl">Request Url</param>
+        /// <returns>HttpClient</returns>
+        private HttpClient CreateHttpClient(string requestUrl)
         {
             var client = new HttpClient(CreateHttpClientHandler());
-            var headers = GetRequestHeaders();
+            var headers = GetRequestHeaders(requestUrl);
             foreach (var key in headers.Keys)
             {
                 client.DefaultRequestHeaders.TryAddWithoutValidation(key, headers[key]);
@@ -159,7 +160,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             try
             {
-                var client = CreateHttpClient();
+                var client = CreateHttpClient(GetBaseUrl() + url);
 
                 var requestMessage = new HttpRequestMessage
                 {
@@ -221,7 +222,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             try
             {
-                var client = CreateHttpClient();
+                var client = CreateHttpClient(GetBaseUrl() + url);
                 var request = new HttpRequestMessage(HttpMethod.Head, GetBaseUrl() + url);
                 var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
