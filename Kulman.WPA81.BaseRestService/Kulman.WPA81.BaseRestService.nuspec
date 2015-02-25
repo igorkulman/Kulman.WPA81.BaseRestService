@@ -6,14 +6,14 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>https://raw.github.com/igorkulman/Kulman.WPA81.BaseRestService/master/LICENSE.txt</licenseUrl>
+    <licenseUrl>https://raw.githubusercontent.com/igorkulman/Kulman.WPA81.BaseRestService/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/igorkulman/Kulman.WPA81.BaseRestService</projectUrl>
     <iconUrl>https://dl.dropboxusercontent.com/u/73642/Nuget.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>$description$</summary>
     <description>$description$</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2014</copyright>
+    <copyright>Copyright 2014-2015 Igor Kulman</copyright>
     <tags></tags>
   </metadata>
 </package>
