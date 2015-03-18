@@ -14,7 +14,7 @@ namespace Kulman.WPA81.Test
             return "";
         }
 
-        protected override Dictionary<string, string> GetRequestHeaders()
+        protected override Dictionary<string, string> GetRequestHeaders(string url)
         {
             return new Dictionary<string, string>();
         }
