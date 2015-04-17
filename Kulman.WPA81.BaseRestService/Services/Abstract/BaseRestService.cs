@@ -37,7 +37,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// Must be overriden to set the default request headers
         /// </summary>
         /// <returns>Dictionary containing default request headers</returns>
-        protected abstract Dictionary<string, string> GetRequestHeaders(string requestUrl);        
+        protected virtual Dictionary<string, string> GetRequestHeaders(string requestUrl)
+        {
+            return new Dictionary<string, string>();
+        }        
 
         /// <summary>
         /// REST Get
@@ -140,7 +143,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         private async Task GetResponse(string url, HttpMethod method, object request)
         {
-            await GetResponse<Object>(url, method, request, true);
+            await GetResponse<Object>(url, method, request, true).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -153,7 +156,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         private async Task<T> GetResponse<T>(string url, HttpMethod method, object request, bool noOutput = false)
         {
-            await OnBeforeRequest(url);
+            await OnBeforeRequest(url).ConfigureAwait(false);
 
             string json = string.Empty;
             HttpResponseMessage data = null;
@@ -169,7 +172,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                     Content = request != null ? new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json") : null,
                 };
 
-                data = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+                data = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
                 if (noOutput)
                 {
@@ -216,7 +219,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Dictionary with headers</returns>
         public async Task<Dictionary<string, IEnumerable<string>>> Head(string url)
         {
-            await OnBeforeRequest(url);
+            await OnBeforeRequest(url).ConfigureAwait(false);
 
             HttpResponseMessage data = null;
 
