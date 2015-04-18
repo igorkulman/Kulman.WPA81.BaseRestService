@@ -203,7 +203,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             T result;
 
             //deserialization and creation of the result
-            using (var s = await data.Content.ReadAsStreamAsync())
+            using (var s = await data.Content.ReadAsStreamAsync().ConfigureAwait(false))
             {
                 using (var sr = new StreamReader(s))
                 {
@@ -240,7 +240,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             {
                 var client = CreateHttpClient(GetBaseUrl() + url);
                 var request = new HttpRequestMessage(HttpMethod.Head, GetBaseUrl() + url);
-                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
 
                 return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value);
             }
