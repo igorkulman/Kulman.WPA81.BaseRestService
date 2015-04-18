@@ -41,6 +41,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Abstract\BaseRestService.cs" />
     <Compile Include="Services\Exceptions\ConnectionException.cs" />

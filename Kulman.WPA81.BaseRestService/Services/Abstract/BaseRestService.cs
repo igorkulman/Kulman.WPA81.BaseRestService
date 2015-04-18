@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Kulman.WPA81.BaseRestService.Services.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -28,7 +30,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <returns>Task</returns>
-        protected virtual Task OnBeforeRequest(string url)
+        protected virtual Task OnBeforeRequest([NotNull] string url)
         {
             return Task.FromResult(1);
         }
@@ -37,17 +39,17 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// Must be overriden to set the default request headers
         /// </summary>
         /// <returns>Dictionary containing default request headers</returns>
-        protected virtual Dictionary<string, string> GetRequestHeaders(string requestUrl)
+        protected virtual Dictionary<string, string> GetRequestHeaders([NotNull] string requestUrl)
         {
             return new Dictionary<string, string>();
-        }        
+        }
 
         /// <summary>
         /// REST Get
         /// </summary>        
         /// <param name="url">Url</param>
         /// <returns>Task</returns>
-        protected Task<T> Get<T>(string url)
+        protected Task<T> Get<T>([NotNull] string url)
         {
             return GetResponse<T>(url, HttpMethod.Get, null);
         }
@@ -57,7 +59,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <returns>Task</returns>
-        protected Task Delete(string url)
+        protected Task Delete([NotNull] string url)
         {
             return GetResponse(url, HttpMethod.Delete, null);
         }
@@ -68,7 +70,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON)</param>
         /// <returns>Task</returns>
-        protected Task<T> Put<T>(string url, object request)
+        protected Task<T> Put<T>([NotNull] string url, [CanBeNull] object request)
         {
             return GetResponse<T>(url, HttpMethod.Put, request);
         }
@@ -79,7 +81,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON)</param>
         /// <returns>Task</returns>
-        protected Task<T> Post<T>(string url, object request)
+        protected Task<T> Post<T>([NotNull] string url, [CanBeNull] object request)
         {
             return GetResponse<T>(url, HttpMethod.Post, request);
         }
@@ -90,7 +92,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON)</param>
         /// <returns>Task</returns>
-        protected Task<T> Patch<T>(string url, object request)
+        protected Task<T> Patch<T>([NotNull] string url, [CanBeNull] object request)
         {
             return GetResponse<T>(url, new HttpMethod("PATCH"), request);
         }
@@ -114,7 +116,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="requestUrl">Request Url</param>
         /// <returns>HttpClient</returns>
-        private HttpClient CreateHttpClient(string requestUrl)
+        private HttpClient CreateHttpClient([NotNull] string requestUrl)
         {
             var client = new HttpClient(CreateHttpClientHandler());
             var headers = GetRequestHeaders(requestUrl);
@@ -141,7 +143,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
         /// <returns>Task</returns>
-        private async Task GetResponse(string url, HttpMethod method, object request)
+        private async Task GetResponse([NotNull] string url, [NotNull] HttpMethod method,[NotNull] object request)
         {
             await GetResponse<Object>(url, method, request, true).ConfigureAwait(false);
         }
@@ -154,11 +156,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="request">HTTP request</param>
         /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
         /// <returns>Task</returns>
-        private async Task<T> GetResponse<T>(string url, HttpMethod method, object request, bool noOutput = false)
+        private async Task<T> GetResponse<T>([NotNull] string url, [NotNull]  HttpMethod method, [CanBeNull] object request, bool noOutput = false)
         {
             await OnBeforeRequest(url).ConfigureAwait(false);
 
-            string json = string.Empty;
             HttpResponseMessage data = null;
 
             try
@@ -179,13 +180,15 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                     return default(T);
                 }
 
-                json = await data.Content.ReadAsStringAsync();
+#if DEBUG
+                var json = await data.Content.ReadAsStringAsync();
                 // *******************
                 // DEBUG INFO
                 // *******************
                 Debug.WriteLine("RESPONSE:" + url);
                 Debug.WriteLine(json.Length < 1000 ? json : json.Substring(0, Math.Min(json.Length, 1000)));
                 // *******************
+#endif
                 data.EnsureSuccessStatusCode();
             }
             catch (TaskCanceledException)
@@ -194,19 +197,29 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed, json);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed);
             }
 
             T result;
 
-            try
+            //deserialization and creation of the result
+            using (var s = await data.Content.ReadAsStreamAsync())
             {
-                //deserialization and creation of the result
-                result = JsonConvert.DeserializeObject<T>(json);
-            }
-            catch (Exception ex)
-            {
-                throw new DeserializationException("Error while processing response. See the inner exception for details.", ex, json);
+                using (var sr = new StreamReader(s))
+                {
+                    using (JsonReader reader = new JsonTextReader(sr))
+                    {
+                        try
+                        {
+                            var serializer = new JsonSerializer();
+                            result = serializer.Deserialize<T>(reader);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new DeserializationException("Error while processing response. See the inner exception for details.", ex, reader.ReadAsString());
+                        }
+                    }
+                }
             }
 
             return result;
@@ -217,7 +230,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <returns>Dictionary with headers</returns>
-        public async Task<Dictionary<string, IEnumerable<string>>> Head(string url)
+        public async Task<Dictionary<string, IEnumerable<string>>> Head([NotNull] string url)
         {
             await OnBeforeRequest(url).ConfigureAwait(false);
 
@@ -237,7 +250,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed, string.Empty);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed);
             }
         }
     }

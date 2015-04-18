@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using JetBrains.Annotations;
 
 namespace Kulman.WPA81.BaseRestService.Services.Exceptions
 {
@@ -8,18 +9,13 @@ namespace Kulman.WPA81.BaseRestService.Services.Exceptions
         /// <summary>
         /// HTTP status code from the server
         /// </summary>
+        [NotNull]
         public HttpStatusCode Status { get; private set; }
 
-        /// <summary>
-        /// JSON response from the server
-        /// </summary>
-        public string Response { get; set; }
-
-        public ConnectionException(string message, Exception innerException, HttpStatusCode status, string response)
+        public ConnectionException([NotNull] string message, [NotNull] Exception innerException, [NotNull] HttpStatusCode status)
             : base(message, innerException)
         {
             Status = status;
-            Response = response;
         }
     }
 }

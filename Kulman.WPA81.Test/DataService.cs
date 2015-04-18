@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Kulman.WPA81.Test.Data;
 
 namespace Kulman.WPA81.Test
@@ -14,11 +10,6 @@ namespace Kulman.WPA81.Test
             return "";
         }
 
-        protected override Dictionary<string, string> GetRequestHeaders(string url)
-        {
-            return new Dictionary<string, string>();
-        }
-
         public Task<IPResponse> Get()
         {
             return Get<IPResponse>("http://ip.jsontest.com");
@@ -26,7 +17,7 @@ namespace Kulman.WPA81.Test
 
         public Task<PostUserLoginResponse> Post(PostUserLoginRequest request)
         {
-            return Post<PostUserLoginResponse>("https://private-34396-gooddata.apiary-mock.com/gdc/account/login", request);
+            return Post<PostUserLoginResponse>("https://private-anon-36c13ade2-timdorr.apiary-mock.com/login", request);
         }
     }
 }
