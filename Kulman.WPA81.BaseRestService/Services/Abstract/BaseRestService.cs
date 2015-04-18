@@ -143,7 +143,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
         /// <returns>Task</returns>
-        private async Task GetResponse([NotNull] string url, [NotNull] HttpMethod method,[NotNull] object request)
+        private async Task GetResponse([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request)
         {
             await GetResponse<Object>(url, method, request, true).ConfigureAwait(false);
         }
