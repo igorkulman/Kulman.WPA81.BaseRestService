@@ -3,7 +3,7 @@ Base REST service for Universal Apps
 
 [![Build status](https://ci.appveyor.com/api/projects/status/tyk3ff6jamxondgh?svg=true)](https://ci.appveyor.com/project/igorkulman/kulman-wpa81-baserestservice)
 
-Base class for a Windows Phone 8, Windows Phone 8.1 XAML and Windows 8.1 REST service implementation.
+Base class for a Windows Phone 8.1 (Silverlight), Windows Phone 8.1 XAML and Windows 8.1 REST service implementation.
 
 ## Installation
 
