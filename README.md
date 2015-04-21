@@ -40,6 +40,7 @@ Task<T> Put<T>(string url, object request);
 Task<T> Post<T>(string url, object request);
 Task<T> Patch<T>(string url, object request);
 Task Delete(string url);
+Task<Dictionary<string, string>> Head(string url);
 ```
 
 Methods in your service may then look like this
