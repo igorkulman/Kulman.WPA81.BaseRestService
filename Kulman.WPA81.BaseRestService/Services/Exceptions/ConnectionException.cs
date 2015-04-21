@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Net;
+using Windows.Web.Http;
 using JetBrains.Annotations;
 
 namespace Kulman.WPA81.BaseRestService.Services.Exceptions

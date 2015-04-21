@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Web.Http;
+using Windows.Web.Http.Filters;
 using JetBrains.Annotations;
 using Kulman.WPA81.BaseRestService.Services.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using HttpStatusCode = System.Net.HttpStatusCode;
+using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace Kulman.WPA81.BaseRestService.Services.Abstract
 {
@@ -101,13 +103,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// Override if you need custom HttpClientHandler
         /// </summary>
         /// <returns>HttpClientHandler</returns>
-        protected virtual HttpClientHandler CreateHttpClientHandler()
+        protected virtual IHttpFilter CreateHttpFilter()
         {
-            var handler = new HttpClientHandler();
-            if (handler.SupportsAutomaticDecompression)
-            {
-                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            }
+            var handler = new HttpBaseProtocolFilter { AutomaticDecompression = true };
             return handler;
         }
 
@@ -118,11 +116,11 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>HttpClient</returns>
         private HttpClient CreateHttpClient([NotNull] string requestUrl)
         {
-            var client = new HttpClient(CreateHttpClientHandler());
+            var client = new HttpClient(CreateHttpFilter());
             var headers = GetRequestHeaders(requestUrl);
             foreach (var key in headers.Keys)
             {
-                client.DefaultRequestHeaders.TryAddWithoutValidation(key, headers[key]);
+                client.DefaultRequestHeaders.TryAppendWithoutValidation(key, headers[key]);
             }
 
             var settings = new JsonSerializerSettings()
@@ -170,10 +168,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                 {
                     Method = method,
                     RequestUri = new Uri(GetBaseUrl() + url),
-                    Content = request != null ? new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json") : null,
+                    Content = request != null ? new HttpStringContent(JsonConvert.SerializeObject(request), UnicodeEncoding.Utf8, "application/json") : null,
                 };
 
-                data = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+                data = await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
 
                 if (noOutput)
                 {
@@ -197,15 +195,15 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : Windows.Web.Http.HttpStatusCode.ExpectationFailed);
             }
 
             T result;
 
             //deserialization and creation of the result
-            using (var s = await data.Content.ReadAsStreamAsync().ConfigureAwait(false))
+            using (var s = await data.Content.ReadAsInputStreamAsync())
             {
-                using (var sr = new StreamReader(s))
+                using (var sr = new StreamReader(s.AsStreamForRead()))
                 {
                     using (JsonReader reader = new JsonTextReader(sr))
                     {
@@ -230,7 +228,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <returns>Dictionary with headers</returns>
-        public async Task<Dictionary<string, IEnumerable<string>>> Head([NotNull] string url)
+        public async Task<Dictionary<string, string>> Head([NotNull] string url)
         {
             await OnBeforeRequest(url).ConfigureAwait(false);
 
@@ -239,8 +237,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             try
             {
                 var client = CreateHttpClient(GetBaseUrl() + url);
-                var request = new HttpRequestMessage(HttpMethod.Head, GetBaseUrl() + url);
-                var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+                var request = new HttpRequestMessage(HttpMethod.Head, new Uri(GetBaseUrl() + url));
+                var response = await client.SendRequestAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
                 return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value);
             }
@@ -250,7 +248,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : Windows.Web.Http.HttpStatusCode.ExpectationFailed);
             }
         }
     }
