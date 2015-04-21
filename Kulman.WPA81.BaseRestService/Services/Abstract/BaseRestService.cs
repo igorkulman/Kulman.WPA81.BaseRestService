@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage.Streams;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using JetBrains.Annotations;
 using Kulman.WPA81.BaseRestService.Services.Exceptions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using HttpStatusCode = System.Net.HttpStatusCode;
-using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 namespace Kulman.WPA81.BaseRestService.Services.Abstract
 {
@@ -128,7 +126,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
             };
 
-            settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+            settings.Converters.Add(new StringEnumConverter());
 
             return client;
         }
@@ -195,7 +193,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : Windows.Web.Http.HttpStatusCode.ExpectationFailed);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed);
             }
 
             T result;
@@ -248,7 +246,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : Windows.Web.Http.HttpStatusCode.ExpectationFailed);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed);
             }
         }
     }
