@@ -20,6 +20,18 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
     /// </summary>
     public abstract class BaseRestService
     {
+        private readonly HttpBaseProtocolFilter _filter;
+
+        protected HttpCookieManager CookieManager
+        {
+            get { return _filter.CookieManager; }
+        }
+
+        protected BaseRestService()
+        {
+            _filter = CreateHttpFilter();
+        }
+
         /// <summary>
         /// Must be overriden to set the Base URL
         /// </summary>
@@ -102,7 +114,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// Override if you need custom HttpClientHandler
         /// </summary>
         /// <returns>HttpClientHandler</returns>
-        protected virtual IHttpFilter CreateHttpFilter()
+        protected virtual HttpBaseProtocolFilter CreateHttpFilter()
         {
             var handler = new HttpBaseProtocolFilter { AutomaticDecompression = true };
             return handler;
@@ -115,7 +127,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>HttpClient</returns>
         private HttpClient CreateHttpClient([NotNull] string requestUrl)
         {
-            var client = new HttpClient(CreateHttpFilter());
+            var client = new HttpClient(_filter);
             var headers = GetRequestHeaders(requestUrl);
             foreach (var key in headers.Keys)
             {
