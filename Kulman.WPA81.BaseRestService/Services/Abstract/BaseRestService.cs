@@ -20,13 +20,22 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
     /// </summary>
     public abstract class BaseRestService
     {
+        /// <summary>
+        /// Http filter
+        /// </summary>
         private readonly HttpBaseProtocolFilter _filter;
 
+        /// <summary>
+        /// Cookie manager
+        /// </summary>
         protected HttpCookieManager CookieManager
         {
             get { return _filter.CookieManager; }
         }
 
+        /// <summary>
+        /// Ctor, creates Http filter
+        /// </summary>
         protected BaseRestService()
         {
             _filter = CreateHttpFilter();
