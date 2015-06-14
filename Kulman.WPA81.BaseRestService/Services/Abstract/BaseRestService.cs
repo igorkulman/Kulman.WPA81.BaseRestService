@@ -90,7 +90,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// REST Put
         /// </summary>
         /// <param name="url">Url</param>
-        /// <param name="request">Request object (will be serialized to JSON)</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <returns>Task</returns>
         protected Task<T> Put<T>([NotNull] string url, [CanBeNull] object request)
         {
@@ -101,7 +101,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// REST Post
         /// </summary>
         /// <param name="url">Url</param>
-        /// <param name="request">Request object (will be serialized to JSON)</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <returns>Task</returns>
         protected Task<T> Post<T>([NotNull] string url, [CanBeNull] object request)
         {
@@ -112,7 +112,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// REST Patch
         /// </summary>
         /// <param name="url">Url</param>
-        /// <param name="request">Request object (will be serialized to JSON)</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <returns>Task</returns>
         protected Task<T> Patch<T>([NotNull] string url, [CanBeNull] object request)
         {
@@ -180,6 +180,18 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             HttpResponseMessage data = null;
 
+            HttpStringContent requestcontent = null;
+
+            var content = request as string;
+            if (content != null)
+            {
+                requestcontent = new HttpStringContent(content);
+            }
+            else if (request != null)
+            {
+                requestcontent = new HttpStringContent(JsonConvert.SerializeObject(request), UnicodeEncoding.Utf8, "application/json");
+            }
+
             try
             {
                 var client = CreateHttpClient(GetBaseUrl() + url);
@@ -188,7 +200,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                 {
                     Method = method,
                     RequestUri = new Uri(GetBaseUrl() + url),
-                    Content = request != null ? new HttpStringContent(JsonConvert.SerializeObject(request), UnicodeEncoding.Utf8, "application/json") : null,
+                    Content = requestcontent,
                 };
 
                 data = await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
