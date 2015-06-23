@@ -7,6 +7,8 @@ Base class for a Windows Phone 8.1 (Silverlight), Windows Phone 8.1 XAML and Win
 
 ## Installation
 
+[![NuGet version](http://img.shields.io/nuget/v/Kulman.WPA81.BaseRestService.svg?style=flat)](https://nuget.org/packages/Nancy.LightningCache.2)  [![NuGet downloads](http://img.shields.io/nuget/dt/Kulman.WPA81.BaseRestService.svg?style=flat)](https://nuget.org/packages/Kulman.WPA81.BaseRestService)
+
 	PM> Install-Package Kulman.WPA81.BaseRestService
 	
 ## Usage
