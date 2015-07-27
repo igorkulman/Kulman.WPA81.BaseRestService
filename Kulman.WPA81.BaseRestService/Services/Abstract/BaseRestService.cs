@@ -237,7 +237,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             try
             {
-                var fullUrl = url.StartsWith("http") ? url : GetBaseUrl() + url;
+                var fullUrl = (new [] { "http://" , "https://" }).Any(url.StartsWith) ? url : GetBaseUrl() + url;
 
                 var client = CreateHttpClient(fullUrl);
 
