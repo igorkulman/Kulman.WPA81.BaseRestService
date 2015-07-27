@@ -58,7 +58,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
 
         /// <summary>
-        /// Must be overriden to set the default request headers
+        /// Can be overriden to set the default request headers
         /// </summary>
         /// <returns>Dictionary containing default request headers</returns>
         protected virtual Dictionary<string, string> GetRequestHeaders([NotNull] string requestUrl)
@@ -74,6 +74,16 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         protected Task<T> Get<T>([NotNull] string url)
         {
             return GetResponse<T>(url, HttpMethod.Get, null);
+        }
+
+        /// <summary>
+        /// REST Get (RAW)
+        /// </summary>        
+        /// <param name="url">Url</param>
+        /// <returns>Task</returns>
+        protected Task<HttpResponseMessage> Get([NotNull] string url)
+        {
+            return GetRawResponse(url, HttpMethod.Get, null);
         }
 
         /// <summary>
@@ -98,6 +108,17 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
 
         /// <summary>
+        /// REST Put (RAW)
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <returns>Task</returns>
+        protected Task<HttpResponseMessage> Put([NotNull] string url, [CanBeNull] object request)
+        {
+            return GetRawResponse(url, HttpMethod.Put, request);
+        }
+
+        /// <summary>
         /// REST Post
         /// </summary>
         /// <param name="url">Url</param>
@@ -109,6 +130,17 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
 
         /// <summary>
+        /// REST Post (RAW)
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <returns>Task</returns>
+        protected Task<HttpResponseMessage> Post([NotNull] string url, [CanBeNull] object request)
+        {
+            return GetRawResponse(url, HttpMethod.Post, request);
+        }
+
+        /// <summary>
         /// REST Patch
         /// </summary>
         /// <param name="url">Url</param>
@@ -117,6 +149,17 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         protected Task<T> Patch<T>([NotNull] string url, [CanBeNull] object request)
         {
             return GetResponse<T>(url, new HttpMethod("PATCH"), request);
+        }
+
+        /// <summary>
+        /// REST Patch (RAW)
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <returns>Task</returns>
+        protected Task<HttpResponseMessage> Patch([NotNull] string url, [CanBeNull] object request)
+        {
+            return GetRawResponse(url, new HttpMethod("PATCH"), request);
         }
 
         /// <summary>
@@ -167,14 +210,14 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
 
         /// <summary>
-        /// Gets HTTP response
+        /// Gets raw HTTP response
         /// </summary>
         /// <param name="url">Url</param>
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
         /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
         /// <returns>Task</returns>
-        private async Task<T> GetResponse<T>([NotNull] string url, [NotNull]  HttpMethod method, [CanBeNull] object request, bool noOutput = false)
+        private async Task<HttpResponseMessage> GetRawResponse([NotNull] string url, [NotNull]  HttpMethod method, [CanBeNull] object request, bool noOutput = false)
         {
             await OnBeforeRequest(url).ConfigureAwait(false);
 
@@ -194,32 +237,20 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             try
             {
-                var client = CreateHttpClient(GetBaseUrl() + url);
+                var fullUrl = url.StartsWith("http") ? url : GetBaseUrl() + url;
+
+                var client = CreateHttpClient(fullUrl);
 
                 var requestMessage = new HttpRequestMessage
                 {
                     Method = method,
-                    RequestUri = new Uri(GetBaseUrl() + url),
+                    RequestUri = new Uri(fullUrl),
                     Content = requestcontent,
                 };
 
                 data = await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
 
-                if (noOutput)
-                {
-                    return default(T);
-                }
-
-#if DEBUG
-                var json = await data.Content.ReadAsStringAsync();
-                // *******************
-                // DEBUG INFO
-                // *******************
-                Debug.WriteLine("RESPONSE:" + url);
-                Debug.WriteLine(json.Length < 1000 ? json : json.Substring(0, Math.Min(json.Length, 1000)));
-                // *******************
-#endif
-                data.EnsureSuccessStatusCode();
+                return data;
             }
             catch (TaskCanceledException)
             {
@@ -227,10 +258,22 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data?.StatusCode ?? HttpStatusCode.ExpectationFailed);
             }
+        }
 
+        /// <summary>
+        /// Gets HTTP response
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="method">HTTP Method</param>
+        /// <param name="request">HTTP request</param>
+        /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
+        /// <returns>Task</returns>
+        private async Task<T> GetResponse<T>([NotNull] string url, [NotNull]  HttpMethod method, [CanBeNull] object request, bool noOutput = false)
+        {
             T result;
+            var data = await GetRawResponse(url, method, request, noOutput);
 
             //deserialization and creation of the result
             using (var s = await data.Content.ReadAsInputStreamAsync())
@@ -262,9 +305,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Dictionary with headers</returns>
         public async Task<Dictionary<string, string>> Head([NotNull] string url)
         {
-            await OnBeforeRequest(url).ConfigureAwait(false);
-
-            HttpResponseMessage data = null;
+            await OnBeforeRequest(url).ConfigureAwait(false);            
 
             try
             {
@@ -280,7 +321,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data != null ? data.StatusCode : HttpStatusCode.ExpectationFailed);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, HttpStatusCode.ExpectationFailed);
             }
         }
     }
