@@ -13,7 +13,7 @@ Base class for a Windows Phone 8.1 (Silverlight), Windows Phone 8.1 XAML and Win
 	
 ## Usage
 
-Create your service class and inherit from BaseRestService. The minimum you need to do to make it work is to override the GetBaseUrl() method to set the base url for all the requests. If you need and the GetRequestHeaders() to set the default request headers.
+Create your service class and inherit from BaseRestService. The minimum you need to do to make it work is to override the GetBaseUrl() method to set the base url for all the requests.
 
 ```csharp
 public class MyDataService: BaseRestService
@@ -22,15 +22,19 @@ public class MyDataService: BaseRestService
   {
     return "my base url";
   }
+}
+```  
   
-  protected override Dictionary<string, string> GetRequestHeaders()
-  {
+You can (but do not have to) also override the GetRequestHeaders() method to set the default request headers.
+  
+```csharp  
+protected override Dictionary<string, string> GetRequestHeaders()
+{
     return new Dictionary<string, string>
     {
-      {"Accept-Encoding", "gzip, deflate"},
-      {"Accept", "application/json"},
+        {"Accept-Encoding", "gzip, deflate"},
+        {"Accept", "application/json"},
     };
-  }
 }
 ```
 
@@ -43,6 +47,15 @@ Task<T> Post<T>(string url, object request);
 Task<T> Patch<T>(string url, object request);
 Task Delete(string url);
 Task<Dictionary<string, string>> Head(string url);
+```
+
+If you need to get the raw request, there are overloads returning `HttpResponseMessage`
+
+```csharp
+Task<HttpResponseMessage> Get(string url);
+Task<HttpResponseMessage> Put(string url, object request);
+Task<HttpResponseMessage> Post(string url, object request);
+Task<HttpResponseMessage> Patch(string url, object request);
 ```
 
 Methods in your service may then look like this
