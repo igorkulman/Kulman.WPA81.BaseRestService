@@ -186,6 +186,15 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                 client.DefaultRequestHeaders.TryAppendWithoutValidation(key, headers[key]);
             }
 
+            return client;
+        }
+
+        /// <summary>
+        /// Creates JSON serializer settings. Can be overridden.
+        /// </summary>
+        /// <returns>JSON serializer settings</returns>
+        protected virtual JsonSerializerSettings CreateJsonSerializerSettings()
+        {
             var settings = new JsonSerializerSettings()
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -193,7 +202,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             settings.Converters.Add(new StringEnumConverter());
 
-            return client;
+            return settings;
         }
 
         //TODO: merge with the typed version
@@ -232,12 +241,12 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             else if (request != null)
             {
-                requestcontent = new HttpStringContent(JsonConvert.SerializeObject(request), UnicodeEncoding.Utf8, "application/json");
+                requestcontent = new HttpStringContent(JsonConvert.SerializeObject(request, CreateJsonSerializerSettings()), UnicodeEncoding.Utf8, "application/json");
             }
 
             try
             {
-                var fullUrl = (new [] { "http://" , "https://" }).Any(url.StartsWith) ? url : GetBaseUrl() + url;
+                var fullUrl = (new[] { "http://", "https://" }).Any(url.StartsWith) ? url : GetBaseUrl() + url;
 
                 var client = CreateHttpClient(fullUrl);
 
@@ -305,7 +314,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Dictionary with headers</returns>
         public async Task<Dictionary<string, string>> Head([NotNull] string url)
         {
-            await OnBeforeRequest(url).ConfigureAwait(false);            
+            await OnBeforeRequest(url).ConfigureAwait(false);
 
             try
             {
