@@ -1,0 +1,1 @@
+ nuget pack -s .\Kulman.WPA81.BaseRestService.csproj -Prop Configuration=Release
