@@ -97,6 +97,16 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
 
         /// <summary>
+        /// REST Delete
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <returns>Task</returns>
+        protected Task<T> Delete<T>([NotNull] string url)
+        {
+            return GetResponse<T>(url, HttpMethod.Delete, null);
+        }
+
+        /// <summary>
         /// REST Put
         /// </summary>
         /// <param name="url">Url</param>
