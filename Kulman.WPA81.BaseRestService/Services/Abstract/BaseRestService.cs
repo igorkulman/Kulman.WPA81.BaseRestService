@@ -124,6 +124,27 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// REST Delete
         /// </summary>
         /// <param name="url">Url</param>
+        /// <returns>Task</returns>
+        protected Task<T> Delete<T>([NotNull] string url)
+        {
+            return GetResponse<T>(url, HttpMethod.Delete, null, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// REST Delete
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task<T> Delete<T>([NotNull] string url, CancellationToken token)
+        {
+            return GetResponse<T>(url, HttpMethod.Delete, null, token);
+        }
+
+        /// <summary>
+        /// REST Delete
+        /// </summary>
+        /// <param name="url">Url</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Task</returns>
         protected Task Delete([NotNull] string url, CancellationToken token)
@@ -132,17 +153,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
         #endregion
 
-        #region HTTP PUT
-        /// <summary>
-        /// REST Delete
-        /// </summary>
-        /// <param name="url">Url</param>
-        /// <returns>Task</returns>
-        protected Task<T> Delete<T>([NotNull] string url)
-        {
-            return GetResponse<T>(url, HttpMethod.Delete, null);
-        }
-
+        #region HTTP PUT       
         /// <summary>
         /// REST Put
         /// </summary>
