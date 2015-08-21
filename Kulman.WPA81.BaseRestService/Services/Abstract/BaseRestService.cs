@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
 using Windows.Web.Http;
@@ -28,10 +29,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <summary>
         /// Cookie manager
         /// </summary>
-        protected HttpCookieManager CookieManager
-        {
-            get { return _filter.CookieManager; }
-        }
+        protected HttpCookieManager CookieManager => _filter.CookieManager;
 
         /// <summary>
         /// Ctor, creates Http filter
@@ -51,8 +49,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// Executed before every request
         /// </summary>
         /// <param name="url">Url</param>
+        /// <param name="token">Cancellation token</param>
         /// <returns>Task</returns>
-        protected virtual Task OnBeforeRequest([NotNull] string url)
+        protected virtual Task OnBeforeRequest([NotNull] string url, CancellationToken token)
         {
             return Task.FromResult(1);
         }
@@ -66,14 +65,26 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             return new Dictionary<string, string>();
         }
 
+        #region HTTP GET
+        /// <summary>
+        /// REST Get
+        /// </summary>        
+        /// <param name="url">Url</param>        
+        /// <returns>Task</returns>
+        protected Task<T> Get<T>([NotNull] string url)
+        {
+            return GetResponse<T>(url, HttpMethod.Get, null, CancellationToken.None);
+        }
+
         /// <summary>
         /// REST Get
         /// </summary>        
         /// <param name="url">Url</param>
+        /// <param name="token">Cancellation token</param>
         /// <returns>Task</returns>
-        protected Task<T> Get<T>([NotNull] string url)
+        protected Task<T> Get<T>([NotNull] string url, CancellationToken token)
         {
-            return GetResponse<T>(url, HttpMethod.Get, null);
+            return GetResponse<T>(url, HttpMethod.Get, null, token);
         }
 
         /// <summary>
@@ -83,9 +94,22 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         protected Task<HttpResponseMessage> Get([NotNull] string url)
         {
-            return GetRawResponse(url, HttpMethod.Get, null);
+            return GetRawResponse(url, HttpMethod.Get, null, CancellationToken.None);
         }
 
+        /// <summary>
+        /// REST Get (RAW)
+        /// </summary>        
+        /// <param name="url">Url</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task<HttpResponseMessage> Get([NotNull] string url, CancellationToken token)
+        {
+            return GetRawResponse(url, HttpMethod.Get, null, token);
+        }
+        #endregion
+
+        #region HTTP DELETE
         /// <summary>
         /// REST Delete
         /// </summary>
@@ -93,9 +117,22 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         protected Task Delete([NotNull] string url)
         {
-            return GetResponse(url, HttpMethod.Delete, null);
+            return GetResponse(url, HttpMethod.Delete, null, CancellationToken.None);
         }
 
+        /// <summary>
+        /// REST Delete
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task Delete([NotNull] string url, CancellationToken token)
+        {
+            return GetResponse(url, HttpMethod.Delete, null, token);
+        }
+        #endregion
+
+        #region HTTP PUT
         /// <summary>
         /// REST Put
         /// </summary>
@@ -104,7 +141,19 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         protected Task<T> Put<T>([NotNull] string url, [CanBeNull] object request)
         {
-            return GetResponse<T>(url, HttpMethod.Put, request);
+            return GetResponse<T>(url, HttpMethod.Put, request, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// REST Put
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task<T> Put<T>([NotNull] string url, [CanBeNull] object request, CancellationToken token)
+        {
+            return GetResponse<T>(url, HttpMethod.Put, request, token);
         }
 
         /// <summary>
@@ -115,18 +164,44 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         protected Task<HttpResponseMessage> Put([NotNull] string url, [CanBeNull] object request)
         {
-            return GetRawResponse(url, HttpMethod.Put, request);
+            return GetRawResponse(url, HttpMethod.Put, request, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// REST Put (RAW)
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task<HttpResponseMessage> Put([NotNull] string url, [CanBeNull] object request, CancellationToken token)
+        {
+            return GetRawResponse(url, HttpMethod.Put, request, CancellationToken.None);
+        }
+        #endregion
+
+        #region HTTP POST
+        /// <summary>
+        /// REST Post
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task<T> Post<T>([NotNull] string url, [CanBeNull] object request, CancellationToken token)
+        {
+            return GetResponse<T>(url, HttpMethod.Post, request, token);
         }
 
         /// <summary>
         /// REST Post
         /// </summary>
         /// <param name="url">Url</param>
-        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>        
         /// <returns>Task</returns>
         protected Task<T> Post<T>([NotNull] string url, [CanBeNull] object request)
         {
-            return GetResponse<T>(url, HttpMethod.Post, request);
+            return GetResponse<T>(url, HttpMethod.Post, request, CancellationToken.None);
         }
 
         /// <summary>
@@ -137,9 +212,23 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         protected Task<HttpResponseMessage> Post([NotNull] string url, [CanBeNull] object request)
         {
-            return GetRawResponse(url, HttpMethod.Post, request);
+            return GetRawResponse(url, HttpMethod.Post, request, CancellationToken.None);
         }
 
+        /// <summary>
+        /// REST Post (RAW)
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task<HttpResponseMessage> Post([NotNull] string url, [CanBeNull] object request, CancellationToken token)
+        {
+            return GetRawResponse(url, HttpMethod.Post, request, token);
+        }
+        #endregion
+
+        #region HTTP PATCH
         /// <summary>
         /// REST Patch
         /// </summary>
@@ -148,7 +237,19 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         protected Task<T> Patch<T>([NotNull] string url, [CanBeNull] object request)
         {
-            return GetResponse<T>(url, new HttpMethod("PATCH"), request);
+            return GetResponse<T>(url, new HttpMethod("PATCH"), request, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// REST Patch
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task<T> Patch<T>([NotNull] string url, [CanBeNull] object request, CancellationToken token)
+        {
+            return GetResponse<T>(url, new HttpMethod("PATCH"), request, token);
         }
 
         /// <summary>
@@ -159,8 +260,21 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <returns>Task</returns>
         protected Task<HttpResponseMessage> Patch([NotNull] string url, [CanBeNull] object request)
         {
-            return GetRawResponse(url, new HttpMethod("PATCH"), request);
+            return GetRawResponse(url, new HttpMethod("PATCH"), request, CancellationToken.None);
         }
+
+        /// <summary>
+        /// REST Patch (RAW)
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="request">Request object (will be serialized to JSON if not string)</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Task</returns>
+        protected Task<HttpResponseMessage> Patch([NotNull] string url, [CanBeNull] object request, CancellationToken token)
+        {
+            return GetRawResponse(url, new HttpMethod("PATCH"), request, CancellationToken.None);
+        }
+        #endregion
 
         /// <summary>
         /// Override if you need custom HttpClientHandler
@@ -213,9 +327,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
         /// <returns>Task</returns>
-        private async Task GetResponse([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request)
+        private Task GetResponse([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request, CancellationToken token)
         {
-            await GetResponse<Object>(url, method, request, true).ConfigureAwait(false);
+            return GetResponse<Object>(url, method, request, token, true);
         }
 
         /// <summary>
@@ -225,10 +339,11 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
         /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
+        /// <param name="token"></param>
         /// <returns>Task</returns>
-        private async Task<HttpResponseMessage> GetRawResponse([NotNull] string url, [NotNull]  HttpMethod method, [CanBeNull] object request, bool noOutput = false)
+        private async Task<HttpResponseMessage> GetRawResponse([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request, CancellationToken token, bool noOutput = false)
         {
-            await OnBeforeRequest(url).ConfigureAwait(false);
+            await OnBeforeRequest(url, token).ConfigureAwait(false);
 
             HttpResponseMessage data = null;
 
@@ -257,7 +372,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                     Content = requestcontent,
                 };
 
-                data = await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+                data = token == CancellationToken.None ? await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead) : await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).AsTask(token);
 
                 return data;
             }
@@ -279,14 +394,24 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="request">HTTP request</param>
         /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
         /// <returns>Task</returns>
-        private async Task<T> GetResponse<T>([NotNull] string url, [NotNull]  HttpMethod method, [CanBeNull] object request, bool noOutput = false)
+        private async Task<T> GetResponse<T>([NotNull] string url, [NotNull]  HttpMethod method, [CanBeNull] object request, [CanBeNull] CancellationToken token, bool noOutput = false)
         {
             T result;
-            var data = await GetRawResponse(url, method, request, noOutput);
+            var data = await GetRawResponse(url, method, request, token, noOutput);
 
+            if (token != CancellationToken.None && token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();
+            }
+           
             //deserialization and creation of the result
             using (var s = await data.Content.ReadAsInputStreamAsync())
             {
+                if (token != CancellationToken.None && token.IsCancellationRequested)
+                {
+                    token.ThrowIfCancellationRequested();
+                }
+
                 using (var sr = new StreamReader(s.AsStreamForRead()))
                 {
                     using (JsonReader reader = new JsonTextReader(sr))
@@ -297,7 +422,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                             result = serializer.Deserialize<T>(reader);
                         }
                         catch (Exception ex)
-                        {
+                        {                            
                             throw new DeserializationException("Error while processing response. See the inner exception for details.", ex, reader.ReadAsString());
                         }
                     }
@@ -310,17 +435,33 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <summary>
         /// REST Head
         /// </summary>
-        /// <param name="url">Url</param>
+        /// <param name="url">Url</param>        
         /// <returns>Dictionary with headers</returns>
-        public async Task<Dictionary<string, string>> Head([NotNull] string url)
+        public Task<Dictionary<string, string>> Head([NotNull] string url)
         {
-            await OnBeforeRequest(url).ConfigureAwait(false);
+            return Head(url, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// REST Head
+        /// </summary>
+        /// <param name="url">Url</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Dictionary with headers</returns>
+        public async Task<Dictionary<string, string>> Head([NotNull] string url, CancellationToken token)
+        {
+            await OnBeforeRequest(url, token).ConfigureAwait(false);
 
             try
             {
                 var client = CreateHttpClient(GetBaseUrl() + url);
                 var request = new HttpRequestMessage(HttpMethod.Head, new Uri(GetBaseUrl() + url));
                 var response = await client.SendRequestAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+                if (token != CancellationToken.None && token.IsCancellationRequested)
+                {
+                    token.ThrowIfCancellationRequested();
+                }
 
                 return response.Headers.ToDictionary(headerItem => headerItem.Key, headerItem => headerItem.Value);
             }
