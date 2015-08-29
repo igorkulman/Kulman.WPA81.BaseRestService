@@ -1,7 +1,7 @@
 Changelog
 ============================
 
-**Version 1.2**
+**Version 1.2.0**
 
 - adding support for passing cancellation tokens
 - removed Jetbrains.Annotations binary depedency
