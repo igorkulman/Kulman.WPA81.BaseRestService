@@ -3,6 +3,11 @@ Changelog
 
 **Version 1.2.1**
 
+- generating XML documentation and including it in the nuget package
+- HTTP client can be created in derived classes using the CreateHttpClient method
+
+**Version 1.2.1**
+
 - fixing incorrent behavior when HTTP response code is different than 200
 
 **Version 1.2.0**
