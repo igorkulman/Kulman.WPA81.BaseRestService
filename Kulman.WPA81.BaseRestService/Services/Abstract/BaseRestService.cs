@@ -312,7 +312,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="requestUrl">Request Url</param>
         /// <returns>HttpClient</returns>
-        private HttpClient CreateHttpClient([NotNull] string requestUrl)
+        protected HttpClient CreateHttpClient([NotNull] string requestUrl)
         {
             var client = new HttpClient(_filter);
             var headers = GetRequestHeaders(requestUrl);
