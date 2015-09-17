@@ -394,7 +394,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                 };
 
                 data = token == CancellationToken.None ? await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead) : await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).AsTask(token);
-
+                data.EnsureSuccessStatusCode();
                 return data;
             }
             catch (TaskCanceledException)
