@@ -393,8 +393,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                     Content = requestcontent,
                 };
 
-                data = token == CancellationToken.None ? await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead) : await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).AsTask(token);
-                data.EnsureSuccessStatusCode();
+                data = token == CancellationToken.None ? await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead) : await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).AsTask(token);                
                 return data;
             }
             catch (TaskCanceledException)
@@ -419,6 +418,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         {
             T result;
             var data = await GetRawResponse(url, method, request, token, noOutput);
+            data.EnsureSuccessStatusCode();
 
             if (token != CancellationToken.None && token.IsCancellationRequested)
             {
