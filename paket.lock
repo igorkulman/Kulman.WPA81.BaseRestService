@@ -1,0 +1,4 @@
+NUGET
+  remote: https://nuget.org/api/v2
+  specs:
+    Newtonsoft.Json (6.0.8) - framework: portable-win81+wp81+wpa81
