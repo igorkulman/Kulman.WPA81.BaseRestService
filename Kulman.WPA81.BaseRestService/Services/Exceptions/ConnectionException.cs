@@ -16,15 +16,22 @@ namespace Kulman.WPA81.BaseRestService.Services.Exceptions
         public HttpStatusCode Status { get; private set; }
 
         /// <summary>
+        /// HttpResponseMessage content
+        /// </summary>
+        public string ResponseContent { get; private set; }
+
+        /// <summary>
         /// Ctor
         /// </summary>
         /// <param name="message">Error message</param>
         /// <param name="innerException">Inner exception</param>
         /// <param name="status">HTTP status code</param>
-        public ConnectionException([NotNull] string message, [NotNull] Exception innerException, [NotNull] HttpStatusCode status)
+        /// <param name="responseContent">HttpResponseMessage content</param>
+        public ConnectionException([NotNull] string message, [NotNull] Exception innerException, [NotNull] HttpStatusCode status, string responseContent)
             : base(message, innerException)
         {
             Status = status;
+            ResponseContent = responseContent;
         }
     }
 }

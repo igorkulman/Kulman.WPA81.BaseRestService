@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -402,7 +401,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data?.StatusCode ?? HttpStatusCode.ExpectationFailed);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data?.StatusCode ?? HttpStatusCode.ExpectationFailed, null);
             }
         }
 
@@ -418,8 +417,20 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         {
             T result;
             var data = await GetRawResponse(url, method, request, token, noOutput);
-            data.EnsureSuccessStatusCode();
 
+            try
+            {
+                data.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                var content = await data.Content.ReadAsStringAsync();
+
+                data.Content?.Dispose();
+
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data.StatusCode, content);
+            }
+            
             if (token != CancellationToken.None && token.IsCancellationRequested)
             {
                 token.ThrowIfCancellationRequested();
@@ -492,7 +503,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
-                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, HttpStatusCode.ExpectationFailed);
+                throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, HttpStatusCode.ExpectationFailed, null);
             }
         }
     }
