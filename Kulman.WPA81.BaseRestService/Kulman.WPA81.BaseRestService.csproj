@@ -41,6 +41,8 @@
     <Compile Include="Services\Exceptions\ConnectionException.cs" />
     <Compile Include="Services\Exceptions\DataServiceException.cs" />
     <Compile Include="Services\Exceptions\DeserializationException.cs" />
+    <Compile Include="Services\Exceptions\SimpleHttpResponseException.cs" />
+    <Compile Include="Services\Extensions\HttpResponseMessageExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <TargetPlatform Include="Windows Phone, Version=8.1" />

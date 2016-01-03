@@ -10,6 +10,7 @@ using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using JetBrains.Annotations;
 using Kulman.WPA81.BaseRestService.Services.Exceptions;
+using Kulman.WPA81.BaseRestService.Services.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -418,7 +419,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         {
             T result;
             var data = await GetRawResponse(url, method, request, token, noOutput);
-            data.EnsureSuccessStatusCode();
+            await data.EnsureSuccessStatusCodeAsync();
 
             if (token != CancellationToken.None && token.IsCancellationRequested)
             {
