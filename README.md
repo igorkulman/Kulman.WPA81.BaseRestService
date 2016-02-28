@@ -18,27 +18,27 @@ Create your service class and inherit from BaseRestService. The minimum you need
 ```csharp
 public class MyDataService: BaseRestService
 {
-  protected override string GetBaseUrl()
-  {
-    return "my base url";
-  }
+    protected override string GetBaseUrl()
+    {
+        return "my base url";
+    }
 }
 ```  
   
 You can (but do not have to) also override the GetRequestHeaders() method to set the default request headers.
   
 ```csharp  
-protected override Dictionary<string, string> GetRequestHeaders()
+protected override Dictionary<string, string> GetRequestHeaders(string requestUrl)
 {
     return new Dictionary<string, string>
     {
-        {"Accept-Encoding", "gzip, deflate"},
-        {"Accept", "application/json"},
+        { "Accept-Encoding", "gzip, deflate" },
+        { "Accept", "application/json" },
     };
 }
 ```
 
-Now you can use the following methods in your class
+Now you can use the following methods in your class:
 
 ```csharp
 Task<T> Get<T>(string url);
@@ -49,7 +49,7 @@ Task Delete(string url);
 Task<Dictionary<string, string>> Head(string url);
 ```
 
-If you need to get the raw request, there are overloads returning `HttpResponseMessage`
+If you need to get the raw request, there are overloads returning `HttpResponseMessage`:
 
 ```csharp
 Task<HttpResponseMessage> Get(string url);
@@ -63,12 +63,12 @@ Methods in your service may then look like this
 ```csharp
 public Task<List<Account>> GetAccounts()
 {
-  return Get<List<Account>>("/accounts");
+    return Get<List<Account>>("/accounts");
 }
  
 public Task<Account> UpdateAccount(Account account)
 {
-  return Patch<Account>("/accounts",account);
+    return Patch<Account>("/accounts",account);
 }
 ```
 
