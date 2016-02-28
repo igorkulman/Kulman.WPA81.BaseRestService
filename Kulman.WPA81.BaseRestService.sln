@@ -1,13 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
-VisualStudioVersion = 14.0.22823.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{DF0FF805-891F-421D-8849-399546B9FEB8}"
-	ProjectSection(SolutionItems) = preProject
-		paket.dependencies = paket.dependencies
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kulman.WPA81.BaseRestService", "Kulman.WPA81.BaseRestService\Kulman.WPA81.BaseRestService.csproj", "{C08E2B58-8F95-4799-B6A3-4FA0DC740C86}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kulman.WPA81.BaseRestService.Tests", "Kulman.WPA81.BaseRestService.Tests\Kulman.WPA81.BaseRestService.Tests.csproj", "{ED29AC52-6178-4205-A847-850B9F42A245}"

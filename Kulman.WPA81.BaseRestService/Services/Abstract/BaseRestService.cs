@@ -39,7 +39,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         }
 
         /// <summary>
-        /// Must be overriden to set the Base URL
+        /// Must be overridden to set the Base URL
         /// </summary>
         /// <returns>Base URL</returns>
         protected abstract string GetBaseUrl();
@@ -346,6 +346,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
+        /// <param name="token">Cancellation token</param>
         /// <returns>Task</returns>
         private Task GetResponse([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request, CancellationToken token)
         {
@@ -359,7 +360,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
         /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
-        /// <param name="token"></param>
+        /// <param name="token">Cancellation token</param>
         /// <returns>Task</returns>
         private async Task<HttpResponseMessage> GetRawResponse([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request, CancellationToken token, bool noOutput = false)
         {
@@ -411,13 +412,14 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="method">HTTP Method</param>
         /// <param name="request">HTTP request</param>
+        /// <param name="token">Cancellation token</param>
         /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
         /// <returns>Task</returns>
-        private async Task<T> GetResponse<T>([NotNull] string url, [NotNull]  HttpMethod method, [CanBeNull] object request, [CanBeNull] CancellationToken token, bool noOutput = false)
+        private async Task<T> GetResponse<T>([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request, CancellationToken token, bool noOutput = false)
         {
             T result;
             var data = await GetRawResponse(url, method, request, token, noOutput);
-
+            
             try
             {
                 data.EnsureSuccessStatusCode();

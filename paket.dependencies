@@ -1,3 +1,0 @@
-source https://www.nuget.org/api/v2/
-
-nuget Newtonsoft.Json 6.0.8 framework: portable-win81+wp81+wpa81

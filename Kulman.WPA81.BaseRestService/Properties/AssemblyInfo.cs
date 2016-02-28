@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Kulman.WPA81.BaseRestService")]
-[assembly: AssemblyDescription("Base class for a Windows Phone 8.1 and Windows 8.1 REST service implementation")]
+[assembly: AssemblyDescription("Base class for a Windows Phone 8.1, Windows 8.1 and Windows 10 REST service implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Igor Kulman")]
 [assembly: AssemblyProduct("Kulman.WPA81.BaseRestService")]
-[assembly: AssemblyCopyright("Copyright ©  2014 - 2015")]
+[assembly: AssemblyCopyright("Copyright ©  2014 - 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]

@@ -185,3 +185,8 @@ FakesAssemblies/
 /*.suo
 /.paket/paket.exe
 /paket.lock
+
+*.lock.json
+*.nuget.props
+*.nuget.targets
+/.vs/config
