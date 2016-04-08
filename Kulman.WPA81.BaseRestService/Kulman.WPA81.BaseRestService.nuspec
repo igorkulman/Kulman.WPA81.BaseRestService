@@ -15,5 +15,8 @@
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2014-2016 Igor Kulman</copyright>
     <tags></tags>
-  </metadata>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="8.0.3" />
+    </dependencies>
+ </metadata>
 </package>
