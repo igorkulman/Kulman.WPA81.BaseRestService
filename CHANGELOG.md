@@ -1,6 +1,14 @@
 Changelog
 ============================
 
+**Version 1.3.1**
+
+- makiing the Nuget package depend on JSON.NET package
+
+**Version 1.3.0**
+
+- adding a way to recover the response content on connection exception
+
 **Version 1.2.1**
 
 - generating XML documentation and including it in the nuget package
