@@ -1,7 +1,7 @@
 Base REST service for Universal Apps
 ============================
 
-[![NuGet version](http://img.shields.io/nuget/v/Kulman.WPA81.BaseRestService.svg?style=flat)](https://nuget.org/packages/Kulman.WPA81.BaseRestService)  [![Build status](https://ci.appveyor.com/api/projects/status/tyk3ff6jamxondgh?svg=true)](https://ci.appveyor.com/project/igorkulman/kulman-wpa81-baserestservice)  [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/hyperium/hyper/master/LICENSE) ![UWP ready](https://img.shields.io/badge/platform-uwp-green.svg)  ![WinRT ready](https://img.shields.io/badge/platform-winrt-green.svg)  ![WPA81 ready](https://img.shields.io/badge/platform-wpa81-green.svg)
+[![NuGet version](http://img.shields.io/nuget/v/Kulman.WPA81.BaseRestService.svg?style=flat)](https://nuget.org/packages/Kulman.WPA81.BaseRestService)  [![Build status](https://ci.appveyor.com/api/projects/status/tyk3ff6jamxondgh?svg=true)](https://ci.appveyor.com/project/igorkulman/kulman-wpa81-baserestservice)  [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/igorkulman/Kulman.WPA81.BaseRestService/master/LICENSE) ![UWP ready](https://img.shields.io/badge/platform-uwp-green.svg)  ![WinRT ready](https://img.shields.io/badge/platform-winrt-green.svg)  ![WPA81 ready](https://img.shields.io/badge/platform-wpa81-green.svg)
 
 Base class for a Windows Phone 8.1 (Silverlight), Windows Phone 8.1 XAML and Windows 8.1 REST service implementation. Also works fin in Windows 10 projects (UWP).
 
