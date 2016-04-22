@@ -69,7 +69,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// REST Get
         /// </summary>        
         /// <param name="url">Url</param>        
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Get<T>([NotNull] string url)
         {
             return GetResponse<T>(url, HttpMethod.Get, null, CancellationToken.None);
@@ -80,7 +83,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>        
         /// <param name="url">Url</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Get<T>([NotNull] string url, CancellationToken token)
         {
             return GetResponse<T>(url, HttpMethod.Get, null, token);
@@ -90,7 +96,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// REST Get (RAW)
         /// </summary>        
         /// <param name="url">Url</param>
-        /// <returns>Task</returns>
+        /// <returns>HttpResponseMessage</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         protected Task<HttpResponseMessage> Get([NotNull] string url)
         {
             return GetRawResponse(url, HttpMethod.Get, null, CancellationToken.None);
@@ -101,7 +109,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>        
         /// <param name="url">Url</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>HttpResponseMessage</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         protected Task<HttpResponseMessage> Get([NotNull] string url, CancellationToken token)
         {
             return GetRawResponse(url, HttpMethod.Get, null, token);
@@ -114,6 +124,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <returns>Task</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         protected Task Delete([NotNull] string url)
         {
             return GetResponse(url, HttpMethod.Delete, null, CancellationToken.None);
@@ -123,7 +135,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// REST Delete
         /// </summary>
         /// <param name="url">Url</param>
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Delete<T>([NotNull] string url)
         {
             return GetResponse<T>(url, HttpMethod.Delete, null, CancellationToken.None);
@@ -134,7 +149,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Delete<T>([NotNull] string url, CancellationToken token)
         {
             return GetResponse<T>(url, HttpMethod.Delete, null, token);
@@ -146,6 +164,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Task</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         protected Task Delete([NotNull] string url, CancellationToken token)
         {
             return GetResponse(url, HttpMethod.Delete, null, token);
@@ -158,7 +178,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Put<T>([NotNull] string url, [CanBeNull] object request)
         {
             return GetResponse<T>(url, HttpMethod.Put, request, CancellationToken.None);
@@ -170,7 +193,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Put<T>([NotNull] string url, [CanBeNull] object request, CancellationToken token)
         {
             return GetResponse<T>(url, HttpMethod.Put, request, token);
@@ -181,7 +207,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
-        /// <returns>Task</returns>
+        /// <returns>HttpResponseMessage</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         protected Task<HttpResponseMessage> Put([NotNull] string url, [CanBeNull] object request)
         {
             return GetRawResponse(url, HttpMethod.Put, request, CancellationToken.None);
@@ -193,7 +221,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>HttpResponseMessage</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         protected Task<HttpResponseMessage> Put([NotNull] string url, [CanBeNull] object request, CancellationToken token)
         {
             return GetRawResponse(url, HttpMethod.Put, request, CancellationToken.None);
@@ -207,7 +237,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Post<T>([NotNull] string url, [CanBeNull] object request, CancellationToken token)
         {
             return GetResponse<T>(url, HttpMethod.Post, request, token);
@@ -218,7 +251,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>        
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Post<T>([NotNull] string url, [CanBeNull] object request)
         {
             return GetResponse<T>(url, HttpMethod.Post, request, CancellationToken.None);
@@ -229,7 +265,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
-        /// <returns>Task</returns>
+        /// <returns>HttpResponseMessage</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         protected Task<HttpResponseMessage> Post([NotNull] string url, [CanBeNull] object request)
         {
             return GetRawResponse(url, HttpMethod.Post, request, CancellationToken.None);
@@ -241,7 +279,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>HttpResponseMessage</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         protected Task<HttpResponseMessage> Post([NotNull] string url, [CanBeNull] object request, CancellationToken token)
         {
             return GetRawResponse(url, HttpMethod.Post, request, token);
@@ -254,7 +294,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Patch<T>([NotNull] string url, [CanBeNull] object request)
         {
             return GetResponse<T>(url, new HttpMethod("PATCH"), request, CancellationToken.None);
@@ -266,7 +309,10 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>Deserialized data of type T</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         protected Task<T> Patch<T>([NotNull] string url, [CanBeNull] object request, CancellationToken token)
         {
             return GetResponse<T>(url, new HttpMethod("PATCH"), request, token);
@@ -277,7 +323,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
-        /// <returns>Task</returns>
+        /// <returns>HttpResponseMessage</returns>
         protected Task<HttpResponseMessage> Patch([NotNull] string url, [CanBeNull] object request)
         {
             return GetRawResponse(url, new HttpMethod("PATCH"), request, CancellationToken.None);
@@ -289,7 +335,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="request">Request object (will be serialized to JSON if not string)</param>
         /// <param name="token">Cancellation token</param>
-        /// <returns>Task</returns>
+        /// <returns>HttpResponseMessage</returns>
         protected Task<HttpResponseMessage> Patch([NotNull] string url, [CanBeNull] object request, CancellationToken token)
         {
             return GetRawResponse(url, new HttpMethod("PATCH"), request, CancellationToken.None);
@@ -338,8 +384,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             return settings;
         }
-
-        //TODO: merge with the typed version
+        
         /// <summary>
         /// Gets HTTP response
         /// </summary>
@@ -348,6 +393,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="request">HTTP request</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Task</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         private Task GetResponse([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request, CancellationToken token)
         {
             return GetResponse<Object>(url, method, request, token, true);
@@ -362,6 +409,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Task</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>        
         private async Task<HttpResponseMessage> GetRawResponse([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request, CancellationToken token, bool noOutput = false)
         {
             await OnBeforeRequest(url, token).ConfigureAwait(false);
@@ -415,6 +464,9 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="token">Cancellation token</param>
         /// <param name="noOutput">Output will not be proceed when true, method return default(T)</param>
         /// <returns>Task</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
+        /// <exception cref="DeserializationException">When JSON parser cannot process the server response data</exception>
         private async Task<T> GetResponse<T>([NotNull] string url, [NotNull] HttpMethod method, [CanBeNull] object request, CancellationToken token, bool noOutput = false)
         {
             T result;
@@ -437,30 +489,21 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             {
                 token.ThrowIfCancellationRequested();
             }
-           
-            //deserialization and creation of the result
-            using (var s = await data.Content.ReadAsInputStreamAsync())
-            {
-                if (token != CancellationToken.None && token.IsCancellationRequested)
-                {
-                    token.ThrowIfCancellationRequested();
-                }
 
-                using (var sr = new StreamReader(s.AsStreamForRead()))
-                {
-                    using (JsonReader reader = new JsonTextReader(sr))
-                    {
-                        try
-                        {
-                            var serializer = new JsonSerializer();
-                            result = serializer.Deserialize<T>(reader);
-                        }
-                        catch (Exception ex)
-                        {                            
-                            throw new DeserializationException("Error while processing response. See the inner exception for details.", ex, reader.ReadAsString());
-                        }
-                    }
-                }
+            var json = await data.Content.ReadAsStringAsync();
+
+            try
+            {
+                result = JsonConvert.DeserializeObject<T>(json);
+            }
+            catch (Exception ex)
+            {
+                throw new DeserializationException("Error while processing response. See the inner exception for details.", ex, json);
+            }
+
+            if (token != CancellationToken.None && token.IsCancellationRequested)
+            {
+                token.ThrowIfCancellationRequested();
             }
 
             return result;
@@ -471,6 +514,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// </summary>
         /// <param name="url">Url</param>        
         /// <returns>Dictionary with headers</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         public Task<Dictionary<string, string>> Head([NotNull] string url)
         {
             return Head(url, CancellationToken.None);
@@ -482,6 +527,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <param name="url">Url</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Dictionary with headers</returns>
+        /// <exception cref="TaskCanceledException">When operation cancelled</exception>
+        /// <exception cref="ConnectionException">When response from server does not indicate success</exception>
         public async Task<Dictionary<string, string>> Head([NotNull] string url, CancellationToken token)
         {
             await OnBeforeRequest(url, token).ConfigureAwait(false);
