@@ -36,6 +36,8 @@ protected override Dictionary<string, string> GetRequestHeaders(string requestUr
 }
 ```
 
+You can also override the `CreateJsonSerializerSettings` method with you need custom JSON deserialization settings. 
+
 Now you can use the following methods in your class:
 
 ```csharp
