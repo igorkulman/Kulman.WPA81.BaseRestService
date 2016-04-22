@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 namespace Kulman.WPA81.BaseRestService.Services.Exceptions
 {
     /// <summary>
-    /// Connection exception
+    /// Exception thrown when response from the server indicates an error
     /// </summary>
     public class ConnectionException : DataServiceException
     {
@@ -18,6 +18,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Exceptions
         /// <summary>
         /// HttpResponseMessage content
         /// </summary>
+        [CanBeNull]
         public string ResponseContent { get; private set; }
 
         /// <summary>
@@ -27,7 +28,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Exceptions
         /// <param name="innerException">Inner exception</param>
         /// <param name="status">HTTP status code</param>
         /// <param name="responseContent">HttpResponseMessage content</param>
-        public ConnectionException([NotNull] string message, [NotNull] Exception innerException, [NotNull] HttpStatusCode status, string responseContent)
+        public ConnectionException([NotNull] string message, [NotNull] Exception innerException, [NotNull] HttpStatusCode status, [CanBeNull] string responseContent)
             : base(message, innerException)
         {
             Status = status;
