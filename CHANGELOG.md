@@ -1,9 +1,14 @@
 Changelog
 ============================
 
+**Version 1.3.2**
+
+- XML documentation contains info about thrown exceptions
+- making sure DeserializationException contains JSON data
+
 **Version 1.3.1**
 
-- makiing the Nuget package depend on JSON.NET package
+- making the Nuget package depend on JSON.NET package
 
 **Version 1.3.0**
 
