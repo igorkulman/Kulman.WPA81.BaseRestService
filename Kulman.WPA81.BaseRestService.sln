@@ -5,10 +5,6 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kulman.WPA81.BaseRestService", "Kulman.WPA81.BaseRestService\Kulman.WPA81.BaseRestService.csproj", "{C08E2B58-8F95-4799-B6A3-4FA0DC740C86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kulman.WPA81.BaseRestService.Tests", "Kulman.WPA81.BaseRestService.Tests\Kulman.WPA81.BaseRestService.Tests.csproj", "{ED29AC52-6178-4205-A847-850B9F42A245}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kulman.WPA81.BaseRestService.Tests.Win81", "Kulman.WPA81.BaseRestService.Tests.Win81\Kulman.WPA81.BaseRestService.Tests.Win81.csproj", "{1AC94D6A-6103-4539-971B-04289F70D0A3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
