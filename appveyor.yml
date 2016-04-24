@@ -4,6 +4,7 @@ install:
 - cmd: set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
 before_build:
 - cmd: nuget restore
+configuration: Release
 build:
   verbosity: minimal
 after_build:
