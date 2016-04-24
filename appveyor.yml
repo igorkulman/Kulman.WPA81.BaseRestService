@@ -6,3 +6,8 @@ before_build:
 - cmd: nuget restore
 build:
   verbosity: minimal
+after_build:
+- cmd: nuget pack Kulman.WPA81.BaseRestService\Kulman.WPA81.BaseRestService.csproj -Prop Configuration=Release
+artifacts:
+- path: '*.nupkg'
+  name: NuGet.org  
