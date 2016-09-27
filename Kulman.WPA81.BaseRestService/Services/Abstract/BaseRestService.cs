@@ -23,12 +23,20 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// <summary>
         /// Http filter
         /// </summary>
+        [NotNull]
         private readonly HttpBaseProtocolFilter _filter;
 
         /// <summary>
         /// Cookie manager
         /// </summary>
+        [NotNull]
         protected HttpCookieManager CookieManager => _filter.CookieManager;
+
+        /// <summary>
+        /// Logger
+        /// </summary>
+        [CanBeNull]
+        protected readonly ILogger Logger;
 
         /// <summary>
         /// Ctor, creates Http filter
@@ -36,6 +44,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         protected BaseRestService()
         {
             _filter = CreateHttpFilter();
+            Logger = CreateLogger();
         }
 
         /// <summary>
@@ -62,6 +71,15 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         protected virtual Dictionary<string, string> GetRequestHeaders([NotNull] string requestUrl)
         {
             return new Dictionary<string, string>();
+        }
+
+        /// <summary>
+        /// Creates logger used in the service. Override to provide your own logger.
+        /// </summary>
+        /// <returns>Logger</returns>
+        protected virtual ILogger CreateLogger()
+        {
+            return null;
         }
 
         #region HTTP GET
@@ -442,15 +460,19 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                     Content = requestcontent,
                 };
 
+                Logger?.Info($"{method} {fullUrl}"+ (request!=null ? "\r\n"+ JsonConvert.SerializeObject(request, CreateJsonSerializerSettings()) : ""));
+
                 data = token == CancellationToken.None ? await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead) : await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).AsTask(token);                
                 return data;
             }
             catch (TaskCanceledException)
             {
+                Logger?.Error("Requesting {url} cancelled");
                 throw;
             }
             catch (Exception ex)
             {
+                Logger?.Error($"Error communicating with the server for {url}", ex);
                 throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data?.StatusCode ?? HttpStatusCode.ExpectationFailed, null);
             }
         }
@@ -482,6 +504,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
                 data.Content?.Dispose();
 
+                Logger?.Error($"Error communicating with the server for {url}", ex);
                 throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, data.StatusCode, content);
             }
             
@@ -498,6 +521,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
+                Logger?.Error($"Error while processing response for {url}.", ex);
                 throw new DeserializationException("Error while processing response. See the inner exception for details.", ex, json);
             }
 
@@ -535,6 +559,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             try
             {
+                Logger?.Info($"HEAD {GetBaseUrl() + url}");
+
                 var client = CreateHttpClient(GetBaseUrl() + url);
                 var request = new HttpRequestMessage(HttpMethod.Head, new Uri(GetBaseUrl() + url));
                 var response = await client.SendRequestAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -552,6 +578,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             catch (Exception ex)
             {
+                Logger?.Error($"Getting head for {url} failed", ex);
                 throw new ConnectionException("Error communicating with the server. See the inner exception for details.", ex, HttpStatusCode.ExpectationFailed, null);
             }
         }

@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Abstract\BaseRestService.cs" />
+    <Compile Include="Services\Abstract\ILogger.cs" />
     <Compile Include="Services\Exceptions\ConnectionException.cs" />
     <Compile Include="Services\Exceptions\DataServiceException.cs" />
     <Compile Include="Services\Exceptions\DeserializationException.cs" />
