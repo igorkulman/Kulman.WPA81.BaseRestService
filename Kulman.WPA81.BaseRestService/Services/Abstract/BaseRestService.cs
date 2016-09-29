@@ -36,7 +36,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         /// Logger
         /// </summary>
         [CanBeNull]
-        protected readonly ILogger Logger;
+        protected ILogger Logger;
 
         /// <summary>
         /// Ctor, creates Http filter
