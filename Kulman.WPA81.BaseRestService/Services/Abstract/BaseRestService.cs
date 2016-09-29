@@ -427,6 +427,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
 
             HttpStringContent requestcontent = null;
 
+            string requestBody = null;
+
             var content = request as string;
             if (content != null)
             {
@@ -434,7 +436,8 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
             }
             else if (request != null)
             {
-                requestcontent = new HttpStringContent(JsonConvert.SerializeObject(request, CreateJsonSerializerSettings()), UnicodeEncoding.Utf8, "application/json");
+                requestBody = JsonConvert.SerializeObject(request, CreateJsonSerializerSettings());
+                requestcontent = new HttpStringContent(requestBody, UnicodeEncoding.Utf8, "application/json");
             }
 
             try
@@ -450,7 +453,7 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
                     Content = requestcontent,
                 };
 
-                Logger?.Info($"{method} {fullUrl}"+ (request!=null ? "\r\n"+ JsonConvert.SerializeObject(request, CreateJsonSerializerSettings()) : ""));
+                Logger?.Info($"{method} {fullUrl}"+ (requestBody != null ? "\r\n"+ requestBody : ""));
 
                 data = token == CancellationToken.None ? await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead) : await client.SendRequestAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead).AsTask(token);                
                 return data;
