@@ -44,7 +44,6 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         protected BaseRestService()
         {
             _filter = CreateHttpFilter();
-            Logger = CreateLogger();
         }
 
         /// <summary>
@@ -71,15 +70,6 @@ namespace Kulman.WPA81.BaseRestService.Services.Abstract
         protected virtual Dictionary<string, string> GetRequestHeaders([NotNull] string requestUrl)
         {
             return new Dictionary<string, string>();
-        }
-
-        /// <summary>
-        /// Creates logger used in the service. Override to provide your own logger.
-        /// </summary>
-        /// <returns>Logger</returns>
-        protected virtual ILogger CreateLogger()
-        {
-            return null;
         }
 
         #region HTTP GET
